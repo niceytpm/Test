@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แบบตรวจสอบเครื่องจักรก่อนเริ่มงาน (PC Version)</title>
+    <title>แบบฟอร์มตรวจสอบเครื่องจักรก่อนเริ่มงาน (PC Version)</title>
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -41,9 +41,7 @@
             box-shadow: 0 2px 4px rgba(41, 128, 185, 0.3);
             transition: background 0.2s;
         }
-        .btn-setup-main:hover {
-            background-color: #1f618d;
-        }
+        .btn-setup-main:hover { background-color: #1f618d; }
 
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: bold; margin-bottom: 8px; color: #34495e; }
@@ -74,20 +72,14 @@
             cursor: pointer; 
         }
 
-        /* กล่องกรอกอุณหภูมิ (ซ่อนไว้เป็นค่าเริ่มต้น) */
-        .temp-input-box {
-            margin-top: 12px;
+        /* ข้อความแสดงค่าอุณหภูมิที่ยืนยันแล้ว */
+        .temp-badge {
             margin-left: 48px;
-            display: none; /* ซ่อนไว้ก่อน จะแสดงเมื่อกดติ๊กถูก */
-            align-items: center;
-            gap: 10px;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        .temp-input-box input { width: 180px; padding: 10px 12px; border: 2px solid #2980b9; border-radius: 4px; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
+            margin-top: 6px;
+            font-size: 14px;
+            color: #27ae60;
+            font-weight: bold;
+            display: none;
         }
 
         .path-info-box {
@@ -125,6 +117,7 @@
         button[type="submit"]:disabled { background-color: #ea4335; cursor: not-allowed; opacity: 0.85; }
         button[type="submit"]:enabled { background-color: #34a853; cursor: pointer; box-shadow: 0 4px 6px rgba(52, 168, 83, 0.3); }
 
+        /* Style หน้าต่าง Pop-up (Modal) */
         .modal {
             display: none;
             position: fixed;
@@ -140,20 +133,30 @@
             padding: 25px;
             border-radius: 8px;
             width: 90%;
-            max-width: 500px;
+            max-width: 480px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: popIn 0.25s ease-out;
         }
-        .btn-folder {
-            background-color: #34495e;
-            color: white;
-            padding: 10px 15px;
+
+        @keyframes popIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .btn-modal {
+            padding: 12px 20px;
             border: none;
             border-radius: 4px;
+            font-size: 15px;
+            font-weight: bold;
             cursor: pointer;
-            font-size: 14px;
-            margin-top: 5px;
+            flex: 1;
         }
-        .btn-folder:hover { background-color: #2c3e50; }
+        .btn-confirm { background-color: #27ae60; color: white; }
+        .btn-confirm:hover { background-color: #219a52; }
+        .btn-cancel { background-color: #e74c3c; color: white; }
+        .btn-cancel:hover { background-color: #c0392b; }
+        .btn-folder { background-color: #34495e; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -190,19 +193,16 @@
                 </div>
             </div>
 
+            <!-- ข้อ 2: ติ๊กแล้วเด้งป๊อปอัพ -->
             <div class="checklist-item">
                 <div class="check-header">
-                    <input type="checkbox" class="input-check" id="checkTemp">
+                    <input type="checkbox" id="checkTemp">
                     <label for="checkTemp" style="margin: 0; font-weight: normal; cursor: pointer; width: 100%;">
                         2. ตรวจสอบอุณหภูมิฟิกเจอร์ (ค่ามาตรฐาน 50 ± 2 °C)
                     </label>
                 </div>
-                <!-- ช่องกรอกอุณหภูมิจะแสดงขึ้นมาเมื่อกดติ๊กถูกด้านบน -->
-                <div class="temp-input-box" id="tempInputBox">
-                    <label for="actualTemp" style="margin:0; font-size:14px; font-weight:normal;">กรอกอุณภูมิจริง:</label>
-                    <input type="number" id="actualTemp" class="input-check" step="0.1" placeholder="ระบุตัวเลข (48-52)">
-                    <span style="font-size: 14px; color: #555; font-weight: bold;">°C</span>
-                </div>
+                <!-- แสดงอุณหภูมิที่ยืนยันแล้ว -->
+                <div class="temp-badge" id="tempBadge"></div>
             </div>
 
             <div class="checklist-item">
@@ -220,7 +220,31 @@
         </form>
     </div>
 
-    <!-- Modal ตั้งค่าระบบ -->
+    <!-- ================= 1. Modal ป๊อปอัพกรอกอุณหภูมิฟิกเจอร์ ================= -->
+    <div id="tempModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:#2c3e50;">🌡️ ยืนยันอุณหภูมิฟิกเจอร์</h3>
+            <p style="font-size: 14px; color: #555; margin-bottom: 5px;">
+                เกณฑ์มาตรฐาน: <b style="color:#27ae60;">50 ± 2 °C</b> (48.0 - 52.0 °C)
+            </p>
+            <hr style="border:0; border-top:1px solid #eee; margin-bottom: 15px;">
+            
+            <div class="form-group">
+                <label>กรอกอุณภูมิจริงที่วัดได้ (°C):</label>
+                <input type="number" id="modalTempInput" step="0.1" placeholder="เช่น 50.2" style="border: 2px solid #2980b9;">
+            </div>
+
+            <!-- ข้อความแสดง Error กรณีอุณหภูมิหลุดเกณฑ์ -->
+            <div id="modalTempError" style="color: #c5221f; font-size: 13.5px; margin-bottom: 15px; display: none; font-weight: bold;"></div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="button" class="btn-modal btn-confirm" onclick="confirmTemp()">ยืนยัน</button>
+                <button type="button" class="btn-modal btn-cancel" onclick="cancelTemp()">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 2. Modal ป๊อปอัพตั้งค่าระบบ ================= -->
     <div id="setupModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-top:0; color:#2c3e50;">⚙️ ตั้งค่าตำแหน่งบันทึกไฟล์ Log</h3>
@@ -247,30 +271,85 @@
 
     <script>
         let mainDirectoryHandle = null;
+        let confirmedTemp = ""; // ตัวแปรเก็บค่าอุณหภูมิที่ยืนยันแล้ว
+
         const inputs = document.querySelectorAll('.input-check');
         const submitBtn = document.getElementById('submitBtn');
         const statusBox = document.getElementById('statusBox');
-        const setupModal = document.getElementById('setupModal');
         
+        // Modal Element
+        const tempModal = document.getElementById('tempModal');
+        const setupModal = document.getElementById('setupModal');
         const checkTemp = document.getElementById('checkTemp');
-        const tempInputBox = document.getElementById('tempInputBox');
-        const actualTempInput = document.getElementById('actualTemp');
+        const modalTempInput = document.getElementById('modalTempInput');
+        const modalTempError = document.getElementById('modalTempError');
+        const tempBadge = document.getElementById('tempBadge');
 
         function openSetupModal() { setupModal.style.display = 'flex'; }
         function closeSetupModal() { setupModal.style.display = 'none'; }
 
-        // ดักจับการติ๊กถูกที่ช่องอุณหภูมิ เพื่อแสดง/ซ่อน ช่องกรอกตัวเลข
-        checkTemp.addEventListener('change', function() {
+        // --- ระบบดักจับการคลิก Checkbox อุณหภูมิเพื่อเด้ง Pop-up ---
+        checkTemp.addEventListener('click', function(e) {
             if (this.checked) {
-                tempInputBox.style.display = 'flex';
-                actualTempInput.focus(); // โฟกัสเคอร์เซอร์ไปที่ช่องกรอกทันที
+                // ยกเลิกการติ๊กถูกชั่วคราว แล้วเปิด Pop-up
+                e.preventDefault();
+                openTempModal();
             } else {
-                tempInputBox.style.display = 'none';
-                actualTempInput.value = ''; // ล้างค่าตัวเลขเมื่อเลิกติ๊ก
+                // ถ้าพนักงานกดเอาติ๊กถูกออก ให้ล้างค่าอุณหภูมิ
+                confirmedTemp = "";
+                tempBadge.style.display = 'none';
+                tempBadge.innerText = "";
+                validateChecklist();
             }
-            validateChecklist();
         });
 
+        function openTempModal() {
+            modalTempInput.value = confirmedTemp; // ดึงค่าเดิมมาแสดง (ถ้ามี)
+            modalTempError.style.display = 'none';
+            tempModal.style.display = 'flex';
+            setTimeout(() => modalTempInput.focus(), 100);
+        }
+
+        // กดปุ่ม "ยืนยัน" ใน Pop-up อุณหภูมิ
+        function confirmTemp() {
+            const tempValStr = modalTempInput.value.trim();
+            const tempVal = parseFloat(tempValStr);
+
+            if (tempValStr === "") {
+                showTempError("⚠️ กรุณากรอกตัวเลขอุณหภูมิจริง");
+                return;
+            }
+
+            if (isNaN(tempVal) || tempVal < 48.0 || tempVal > 52.0) {
+                showTempError(`❌ อุณหภูมิหลุดเกณฑ์! (วัดได้ ${tempValStr} °C / ต้องอยู่ระหว่าง 48.0 - 52.0 °C)`);
+                return;
+            }
+
+            // ผ่านเกณฑ์อุณหภูมิ -> ติ๊กถูกให้อัตโนมัติและแสดงผล
+            confirmedTemp = tempValStr;
+            checkTemp.checked = true;
+            tempBadge.innerText = `✓ ยืนยันอุณหภูมิแล้ว: ${confirmedTemp} °C (PASS)`;
+            tempBadge.style.display = 'block';
+
+            tempModal.style.display = 'none';
+            validateChecklist();
+        }
+
+        // กดปุ่ม "ยกเลิก" ใน Pop-up อุณหภูมิ
+        function cancelTemp() {
+            if (!confirmedTemp) {
+                checkTemp.checked = false;
+            }
+            tempModal.style.display = 'none';
+            validateChecklist();
+        }
+
+        function showTempError(msg) {
+            modalTempError.innerText = msg;
+            modalTempError.style.display = 'block';
+        }
+
+        // โหลดค่าตั้งค่าระบบ
         window.addEventListener('DOMContentLoaded', () => {
             const savedMachineId = localStorage.getItem('pc_cfg_machine_id');
             if (savedMachineId) {
@@ -282,6 +361,7 @@
             validateChecklist();
         });
 
+        // เลือกโฟลเดอร์หลักในคอมพิวเตอร์
         async function selectParentFolder() {
             try {
                 mainDirectoryHandle = await window.showDirectoryPicker();
@@ -293,25 +373,17 @@
             }
         }
 
+        // บันทึกการตั้งค่าระบบ
         function saveSystemConfig() {
             const cfgMachineId = document.getElementById('cfgMachineId').value.trim();
-            
-            if (!cfgMachineId) {
-                alert('กรุณากรอกรหัสเครื่องจักร');
-                return;
-            }
-
-            if (!mainDirectoryHandle) {
-                alert('กรุณากดเลือกโฟลเดอร์สำหรับเก็บไฟล์ Log ก่อนครับ');
-                return;
-            }
+            if (!cfgMachineId) { alert('กรุณากรอกรหัสเครื่องจักร'); return; }
+            if (!mainDirectoryHandle) { alert('กรุณากดเลือกโฟลเดอร์สำหรับเก็บไฟล์ Log ก่อนครับ'); return; }
 
             localStorage.setItem('pc_cfg_machine_id', cfgMachineId);
             document.getElementById('machineId').value = cfgMachineId;
 
             document.getElementById('dispMachineId').innerText = cfgMachineId;
             document.getElementById('dispMachineId').style.color = "#27ae60";
-            
             document.getElementById('dispFolderPath').innerText = `${mainDirectoryHandle.name} / ${cfgMachineId} /`;
             document.getElementById('dispFolderPath').style.color = "#27ae60";
 
@@ -320,13 +392,12 @@
             validateChecklist();
         }
 
+        // ตรวจสอบสถานะเงื่อนไขทั้งหมดแบบเรียลไทม์
         function validateChecklist() {
             const machineId = document.getElementById('machineId').value.trim();
             const operatorName = document.getElementById('operatorName').value.trim();
             const checkSensor = document.getElementById('checkSensor').checked;
             const check3 = document.getElementById('check3').checked;
-            const actualTempVal = actualTempInput.value;
-            const actualTemp = parseFloat(actualTempVal);
 
             let errors = [];
 
@@ -335,15 +406,8 @@
             if (!operatorName) errors.push("ยังไม่ได้กรอกรหัสผู้ตรวจสอบ");
             if (!checkSensor) errors.push("ยังไม่ได้ติ๊กเช็คแรงกดของเซนเซอร์");
             
-            // ตรวจสอบอุณหภูมิเมื่อมีการติ๊กถูก
-            if (!checkTemp.checked) {
-                errors.push("ยังไม่ได้ติ๊กเช็คอุณหภูมิฟิกเจอร์");
-            } else {
-                if (actualTempVal === "") {
-                    errors.push("กรุณากรอกตัวเลขอุณหภูมิจริงของฟิกเจอร์");
-                } else if (isNaN(actualTemp) || actualTemp < 48.0 || actualTemp > 52.0) {
-                    errors.push(`อุณหภูมิฟิกเจอร์อยู่นอกเกณฑ์! (${actualTempVal} °C / เกณฑ์คือ 48.0 - 52.0 °C)`);
-                }
+            if (!checkTemp.checked || !confirmedTemp) {
+                errors.push("ยังไม่ได้ยืนยันอุณหภูมิฟิกเจอร์ (ต้องผ่านการตรวจ Pop-up)");
             }
 
             if (!check3) errors.push("ยังไม่ได้ติ๊กเช็คระบบความปลอดภัย");
@@ -366,6 +430,7 @@
             input.addEventListener('change', validateChecklist);
         });
 
+        // บันทึก Log ลงโฟลเดอร์แยกตามรหัสเครื่อง
         document.getElementById('checklistForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -377,7 +442,7 @@
 
             const machineId = document.getElementById('machineId').value;
             const operatorName = document.getElementById('operatorName').value;
-            const temp = actualTempInput.value;
+            const temp = confirmedTemp;
             const now = new Date();
             const timeStr = now.toLocaleString('th-TH');
             const dateFileName = now.toISOString().split('T')[0];
@@ -404,10 +469,11 @@
 
                 alert(`🎉 บันทึก Log สำเร็จ!\nจัดเก็บที่: ${mainDirectoryHandle.name} / ${machineId} / ${fileName}`);
                 
-                // เคลียร์ข้อมูลฟอร์ม และซ่อนช่องอุณหภูมิกลับไป
+                // เคลียร์ค่าเตรียมตรวจรอบถัดไป
                 document.getElementById('operatorName').value = '';
-                actualTempInput.value = '';
-                tempInputBox.style.display = 'none';
+                confirmedTemp = "";
+                checkTemp.checked = false;
+                tempBadge.style.display = 'none';
                 document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
                 validateChecklist();
 
