@@ -8,11 +8,11 @@
         /* --- CSS Reset & Native App Styling --- */
         * {
             box-sizing: border-box;
-            user-select: none; /* ป้องกันการคลุมดำข้อความแบบเว็บ */
+            user-select: none;
         }
         body { 
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; 
-            background-color: #0f172a; /* พื้นหลังเข้มสไตล์โปรแกรมเดกส์ท็อป */
+            background-color: #0f172a; 
             color: #334155;
             margin: 0; 
             padding: 0; 
@@ -33,9 +33,10 @@
             display: flex;
             flex-direction: column;
             border: 1px solid #334155;
+            position: relative;
         }
 
-        /* --- Title Bar (แถบหัวโปรแกรม) --- */
+        /* --- Title Bar --- */
         .title-bar {
             background-color: #1e293b;
             color: #f8fafc;
@@ -53,18 +54,22 @@
             align-items: center;
             gap: 10px;
         }
-        .btn-settings {
+        .header-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-header {
             background: #334155;
             color: #f8fafc;
             border: 1px solid #475569;
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 6px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .btn-settings:hover {
+        .btn-header:hover {
             background: #475569;
             color: #fff;
         }
@@ -76,7 +81,7 @@
             max-height: calc(100vh - 80px);
         }
 
-        /* --- Info Bar (แสดงสถานะไดเรกทอรีและเครื่อง) --- */
+        /* --- Status Banner --- */
         .status-banner {
             background-color: #f1f5f9;
             border: 1px solid #cbd5e1;
@@ -165,7 +170,7 @@
             display: none;
         }
 
-        /* --- Real-time Validation Message --- */
+        /* --- Validation Box --- */
         .validation-box {
             margin-top: 20px;
             padding: 14px;
@@ -188,45 +193,52 @@
             margin-top: 18px; 
             transition: all 0.2s;
         }
-        button[type="submit"]:disabled { 
-            background-color: #ef4444; 
-            cursor: not-allowed; 
-            opacity: 0.85; 
-        }
-        button[type="submit"]:enabled { 
-            background-color: #16a34a; 
-            cursor: pointer; 
-            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3); 
-        }
-        button[type="submit"]:enabled:hover {
-            background-color: #15803d;
-        }
+        button[type="submit"]:disabled { background-color: #ef4444; cursor: not-allowed; opacity: 0.85; }
+        button[type="submit"]:enabled { background-color: #16a34a; cursor: pointer; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3); }
+        button[type="submit"]:enabled:hover { background-color: #15803d; }
 
-        /* --- Modal Popup Styling --- */
-        .modal-overlay {
-            display: none;
+        /* --- Overlay & Modal Screens --- */
+        .overlay-screen {
+            display: flex;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(6px);
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 2000;
         }
         .modal-card {
             background: #ffffff;
-            padding: 24px;
+            padding: 28px;
             border-radius: 12px;
             width: 90%;
-            max-width: 440px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-            animation: modalFadeIn 0.2s ease-out;
+            max-width: 420px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+            animation: modalFadeIn 0.25s ease-out;
         }
         @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
+            from { opacity: 0; transform: scale(0.92); }
             to { opacity: 1; transform: scale(1); }
         }
-        .modal-card h3 { margin: 0 0 10px 0; color: #0f172a; font-size: 18px; }
+        .modal-card h2 { margin: 0 0 6px 0; color: #0f172a; font-size: 20px; text-align: center; }
+        .modal-card p { margin: 0 0 20px 0; font-size: 13.5px; color: #64748b; text-align: center; }
+        
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background-color: #0284c7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .btn-login:hover { background-color: #0369a1; }
+
         .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
         .btn-modal {
             padding: 12px 18px;
@@ -246,11 +258,33 @@
 </head>
 <body>
 
+    <!-- ================= 0. หน้าจอดักกรอกรหัสพนักงาน (Login Screen) ================= -->
+    <div id="loginOverlay" class="overlay-screen">
+        <div class="modal-card">
+            <h2>🔐 เข้าสู่ระบบผู้ตรวจสอบ</h2>
+            <p>กรุณากรอกรหัสพนักงานก่อนเริ่มปฏิบัติงาน</p>
+            <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom: 20px;">
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="empIdInput">รหัสพนักงาน / Operator ID:</label>
+                    <input type="text" id="empIdInput" placeholder="เช่น EMP-1024 หรือ 650012" autofocus required style="border: 2px solid #0284c7;">
+                </div>
+                <div id="loginError" style="color: #dc2626; font-size: 13px; margin-bottom: 12px; display: none; font-weight: 600;"></div>
+                <button type="submit" class="btn-login">เข้าใช้งานระบบ [Enter]</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= หน้าจอหลักโปรแกรม ================= -->
     <div class="app-window">
         <!-- Title Bar -->
         <div class="title-bar">
             <h1>⚙️ Machine Inspection System</h1>
-            <button type="button" class="btn-settings" onclick="openSetupModal()">🔧 ตั้งค่าระบบ / โฟลเดอร์ Log</button>
+            <div class="header-btns">
+                <button type="button" class="btn-header" onclick="switchOperator()">🔒 เปลี่ยนพนักงาน</button>
+                <button type="button" class="btn-header" onclick="openSetupModal()">🔧 ตั้งค่าระบบ</button>
+            </div>
         </div>
 
         <!-- App Main Content -->
@@ -258,8 +292,9 @@
             <!-- Active Configuration Info Banner -->
             <div class="status-banner" id="pathDisplay">
                 📌 <b>การเชื่อมต่อปัจจุบัน:</b><br>
-                • หมายเลขเครื่องจักร: <span id="dispMachineId" class="not-set">ยังไม่ได้ระบุ (กดตั้งค่าที่มุมขวาบน)</span><br>
-                • โฟลเดอร์ปลายทาง: <span id="dispFolderPath" class="not-set">ยังไม่ได้เลือกตำแหน่งเซฟ</span>
+                • ผู้ใช้งานปัจจุบัน: <span id="dispOperatorId" class="val">-</span><br>
+                • หมายเลขเครื่องจักร: <span id="dispMachineId" class="not-set">ยังไม่ได้ระบุ (กดตั้งค่าระบบ)</span><br>
+                • โฟลเดอร์ปลายทาง: <span id="dispFolderPath" class="not-set">ยังไม่ได้เลือกโฟลเดอร์</span>
             </div>
 
             <form id="checklistForm">
@@ -270,7 +305,7 @@
 
                 <div class="form-group">
                     <label>รหัสผู้ตรวจสอบ / พนักงาน:</label>
-                    <input type="text" id="operatorName" class="input-check" placeholder="ป้อนรหัสพนักงาน หรือ ชื่อผู้ตรวจสอบ">
+                    <input type="text" id="operatorName" class="input-check" readonly placeholder="ล็อกอินเข้าใช้งานเพื่อแสดงรหัส">
                 </div>
 
                 <div class="section-title">รายการตรวจสอบความปลอดภัย</div>
@@ -310,16 +345,16 @@
     </div>
 
     <!-- ================= 1. Modal: Temperature Confirmation ================= -->
-    <div id="tempModal" class="modal-overlay">
+    <div id="tempModal" class="overlay-screen" style="display: none;">
         <div class="modal-card">
-            <h3>🌡️ ยืนยันอุณหภูมิฟิกเจอร์</h3>
+            <h3 style="margin-top:0;">🌡️ ยืนยันอุณหภูมิฟิกเจอร์</h3>
             <p style="font-size: 13.5px; color: #64748b; margin-bottom: 12px;">
                 ช่วงค่าที่ยอมรับได้: <b style="color:#16a34a;">48.0 - 52.0 °C</b>
             </p>
             <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom: 16px;">
             
             <div class="form-group">
-                <label>ป้อนอุณหภูมิจริงที่วัดได้ (°C):</label>
+                <label for="modalTempInput">ป้อนอุณหภูมิจริงที่วัดได้ (°C):</label>
                 <input type="number" id="modalTempInput" step="0.1" placeholder="เช่น 50.2">
             </div>
 
@@ -333,14 +368,14 @@
     </div>
 
     <!-- ================= 2. Modal: System Setup ================= -->
-    <div id="setupModal" class="modal-overlay">
+    <div id="setupModal" class="overlay-screen" style="display: none;">
         <div class="modal-card">
-            <h3>🔧 ตั้งค่าระบบการบันทึกข้อมูล</h3>
+            <h3 style="margin-top:0;">🔧 ตั้งค่าระบบการบันทึกข้อมูล</h3>
             <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">กำหนดรหัสเครื่องและไดเรกทอรีสำหรับบันทึก Log</p>
             <hr style="border:0; border-top:1px solid #e2e8f0; margin-bottom: 16px;">
             
             <div class="form-group">
-                <label>1. หมายเลขเครื่องจักรประจำเครื่องนี้:</label>
+                <label for="cfgMachineId">1. หมายเลขเครื่องจักรประจำเครื่องนี้:</label>
                 <input type="text" id="cfgMachineId" placeholder="เช่น CNC-01 หรือ M-102">
             </div>
 
@@ -365,6 +400,11 @@
         const submitBtn = document.getElementById('submitBtn');
         const statusBox = document.getElementById('statusBox');
         
+        const loginOverlay = document.getElementById('loginOverlay');
+        const empIdInput = document.getElementById('empIdInput');
+        const operatorName = document.getElementById('operatorName');
+        const dispOperatorId = document.getElementById('dispOperatorId');
+
         const tempModal = document.getElementById('tempModal');
         const setupModal = document.getElementById('setupModal');
         const checkTemp = document.getElementById('checkTemp');
@@ -372,10 +412,34 @@
         const modalTempError = document.getElementById('modalTempError');
         const tempBadge = document.getElementById('tempBadge');
 
+        // --- ระบบล็อกอินพนักงาน ---
+        function handleLogin(e) {
+            e.preventDefault();
+            const val = empIdInput.value.trim();
+            if (!val) {
+                document.getElementById('loginError').innerText = "⚠️ กรุณากรอกรหัสพนักงานก่อนเข้าใช้งาน";
+                document.getElementById('loginError').style.display = "block";
+                return;
+            }
+
+            operatorName.value = val;
+            dispOperatorId.innerText = val;
+            loginOverlay.style.display = 'none';
+            validateChecklist();
+        }
+
+        function switchOperator() {
+            empIdInput.value = "";
+            document.getElementById('loginError').style.display = "none";
+            loginOverlay.style.display = 'flex';
+            setTimeout(() => empIdInput.focus(), 100);
+        }
+
+        // --- ระบบเปิด/ปิด Modal ตั้งค่า ---
         function openSetupModal() { setupModal.style.display = 'flex'; }
         function closeSetupModal() { setupModal.style.display = 'none'; }
 
-        // --- รองรับปุ่ม Enter & Esc บนคีย์บอร์ดในหน้า Pop-up อุณหภูมิ ---
+        // --- รองรับ Enter/Esc ใน Pop-up อุณหภูมิ ---
         modalTempInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -455,6 +519,9 @@
                 disp.className = "val";
             }
             validateChecklist();
+            
+            // โฟกัสไปที่ช่องกรอกรหัสพนักงานทันทีเมื่อเปิดหน้า
+            empIdInput.focus();
         });
 
         // เลือกโฟลเดอร์หลักในคอมพิวเตอร์
@@ -493,15 +560,15 @@
         // Real-time Form Validation
         function validateChecklist() {
             const machineId = document.getElementById('machineId').value.trim();
-            const operatorName = document.getElementById('operatorName').value.trim();
+            const opName = operatorName.value.trim();
             const checkSensor = document.getElementById('checkSensor').checked;
             const check3 = document.getElementById('check3').checked;
 
             let errors = [];
 
+            if (!opName) errors.push("ยังไม่ได้เข้าสู่ระบบด้วยรหัสพนักงาน");
             if (!machineId) errors.push("ยังไม่ได้ตั้งค่าหมายเลขเครื่องจักร");
             if (!mainDirectoryHandle) errors.push("ยังไม่ได้เลือกโฟลเดอร์บันทึก Log");
-            if (!operatorName) errors.push("ยังไม่ได้กรอกรหัสผู้ตรวจสอบ");
             if (!checkSensor) errors.push("ยังไม่ได้ตรวจสอบแรงกดของเซนเซอร์");
             
             if (!checkTemp.checked || !confirmedTemp) {
@@ -528,7 +595,7 @@
             input.addEventListener('change', validateChecklist);
         });
 
-        // Submit Logic (Write to Subfolder / CSV)
+        // Submit Logic
         document.getElementById('checklistForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -539,13 +606,13 @@
             }
 
             const machineId = document.getElementById('machineId').value;
-            const operatorName = document.getElementById('operatorName').value;
+            const opName = operatorName.value;
             const temp = confirmedTemp;
             const now = new Date();
             const timeStr = now.toLocaleString('th-TH');
             const dateFileName = now.toISOString().split('T')[0];
 
-            const logLine = `"${timeStr}","${machineId}","${operatorName}","${temp}","PASS"\n`;
+            const logLine = `"${timeStr}","${machineId}","${opName}","${temp}","PASS"\n`;
 
             try {
                 const machineFolderHandle = await mainDirectoryHandle.getDirectoryHandle(machineId, { create: true });
@@ -565,15 +632,16 @@
                 await writable.write(contentToWrite);
                 await writable.close();
 
-                alert(`🎉 บันทึก Log สำเร็จ!\nจัดเก็บที่: ${mainDirectoryHandle.name} / ${machineId} / ${fileName}`);
+                alert(`🎉 บันทึก Log สำเร็จ!\nผู้ตรวจสอบ: ${opName}\nจัดเก็บที่: ${mainDirectoryHandle.name} / ${machineId} / ${fileName}`);
                 
-                // Clear state
-                document.getElementById('operatorName').value = '';
+                // Clear state & Reset Form
                 confirmedTemp = "";
                 checkTemp.checked = false;
                 tempBadge.style.display = 'none';
                 document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-                validateChecklist();
+                
+                // เด้งกลับไปหน้าล็อกอินเพื่อรอคนถัดไป หรือให้กรอกใหม่
+                switchOperator();
 
             } catch (err) {
                 console.error(err);
