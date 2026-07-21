@@ -29,7 +29,6 @@
         }
         h2 { margin: 0; color: #2c3e50; font-size: 22px; }
         
-        /* ปุ่มตั้งค่าระบบมุมขวาบน */
         .btn-setup-main {
             background-color: #2980b9;
             color: white;
@@ -74,16 +73,23 @@
             margin-left: 10px;
             cursor: pointer; 
         }
+
+        /* กล่องกรอกอุณหภูมิ (ซ่อนไว้เป็นค่าเริ่มต้น) */
         .temp-input-box {
-            margin-top: 10px;
+            margin-top: 12px;
             margin-left: 48px;
-            display: flex;
+            display: none; /* ซ่อนไว้ก่อน จะแสดงเมื่อกดติ๊กถูก */
             align-items: center;
             gap: 10px;
+            animation: fadeIn 0.3s ease-in-out;
         }
-        .temp-input-box input { width: 160px; padding: 8px 12px; }
+        .temp-input-box input { width: 180px; padding: 10px 12px; border: 2px solid #2980b9; border-radius: 4px; }
 
-        /* กล่องแสดงการตั้งค่าปัจจุบัน */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .path-info-box {
             background-color: #eef9ff;
             border: 1px solid #bce1f7;
@@ -105,7 +111,6 @@
         .status-box.error { background-color: #fce8e6; color: #c5221f; border: 1px solid #f5c6cb; }
         .status-box.success { background-color: #e6f4ea; color: #137333; border: 1px solid #ceead6; text-align: center; font-size: 16px; }
 
-        /* ปุ่มบันทึกผลการตรวจ */
         button[type="submit"] { 
             width: 100%; 
             padding: 16px; 
@@ -120,7 +125,6 @@
         button[type="submit"]:disabled { background-color: #ea4335; cursor: not-allowed; opacity: 0.85; }
         button[type="submit"]:enabled { background-color: #34a853; cursor: pointer; box-shadow: 0 4px 6px rgba(52, 168, 83, 0.3); }
 
-        /* Modal หน้าต่างป๊อปอัพตั้งค่า */
         .modal {
             display: none;
             position: fixed;
@@ -156,11 +160,9 @@
     <div class="container">
         <div class="header-bar">
             <h2>📋 ตรวจสอบเครื่องจักร</h2>
-            <!-- ปุ่มกดเปิดหน้าตั้งค่าระบบ -->
             <button type="button" class="btn-setup-main" onclick="openSetupModal()">⚙️ ตั้งค่าระบบ Log / โฟลเดอร์</button>
         </div>
 
-        <!-- แสดงสถานะตำแหน่งโฟลเดอร์ปัจจุบัน -->
         <div class="path-info-box" id="pathDisplay">
             📌 <b>การตั้งค่าปัจจุบัน:</b><br>
             • รหัสเครื่องจักร: <span id="dispMachineId" style="font-weight:bold; color:#c5221f;">ยังไม่ได้ตั้งค่า</span><br>
@@ -195,9 +197,11 @@
                         2. ตรวจสอบอุณหภูมิฟิกเจอร์ (ค่ามาตรฐาน 50 ± 2 °C)
                     </label>
                 </div>
-                <div class="temp-input-box">
-                    <input type="number" id="actualTemp" class="input-check" step="0.1" placeholder="กรอกอุณภูมิจริง">
-                    <span style="font-size: 14px; color: #555;">°C</span>
+                <!-- ช่องกรอกอุณหภูมิจะแสดงขึ้นมาเมื่อกดติ๊กถูกด้านบน -->
+                <div class="temp-input-box" id="tempInputBox">
+                    <label for="actualTemp" style="margin:0; font-size:14px; font-weight:normal;">กรอกอุณภูมิจริง:</label>
+                    <input type="number" id="actualTemp" class="input-check" step="0.1" placeholder="ระบุตัวเลข (48-52)">
+                    <span style="font-size: 14px; color: #555; font-weight: bold;">°C</span>
                 </div>
             </div>
 
@@ -216,7 +220,7 @@
         </form>
     </div>
 
-    <!-- Modal ป๊อปอัพตั้งค่าระบบ -->
+    <!-- Modal ตั้งค่าระบบ -->
     <div id="setupModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-top:0; color:#2c3e50;">⚙️ ตั้งค่าตำแหน่งบันทึกไฟล์ Log</h3>
@@ -247,11 +251,26 @@
         const submitBtn = document.getElementById('submitBtn');
         const statusBox = document.getElementById('statusBox');
         const setupModal = document.getElementById('setupModal');
+        
+        const checkTemp = document.getElementById('checkTemp');
+        const tempInputBox = document.getElementById('tempInputBox');
+        const actualTempInput = document.getElementById('actualTemp');
 
         function openSetupModal() { setupModal.style.display = 'flex'; }
         function closeSetupModal() { setupModal.style.display = 'none'; }
 
-        // โหลดค่าเดิมที่เคยบันทึกไว้ในเบราว์เซอร์ขึ้นมาแสดง
+        // ดักจับการติ๊กถูกที่ช่องอุณหภูมิ เพื่อแสดง/ซ่อน ช่องกรอกตัวเลข
+        checkTemp.addEventListener('change', function() {
+            if (this.checked) {
+                tempInputBox.style.display = 'flex';
+                actualTempInput.focus(); // โฟกัสเคอร์เซอร์ไปที่ช่องกรอกทันที
+            } else {
+                tempInputBox.style.display = 'none';
+                actualTempInput.value = ''; // ล้างค่าตัวเลขเมื่อเลิกติ๊ก
+            }
+            validateChecklist();
+        });
+
         window.addEventListener('DOMContentLoaded', () => {
             const savedMachineId = localStorage.getItem('pc_cfg_machine_id');
             if (savedMachineId) {
@@ -263,7 +282,6 @@
             validateChecklist();
         });
 
-        // กดเลือกโฟลเดอร์หลักในคอมพิวเตอร์
         async function selectParentFolder() {
             try {
                 mainDirectoryHandle = await window.showDirectoryPicker();
@@ -275,7 +293,6 @@
             }
         }
 
-        // บันทึกการตั้งค่า
         function saveSystemConfig() {
             const cfgMachineId = document.getElementById('cfgMachineId').value.trim();
             
@@ -303,15 +320,13 @@
             validateChecklist();
         }
 
-        // ตรวจสอบความถูกต้องแบบเรียลไทม์
         function validateChecklist() {
             const machineId = document.getElementById('machineId').value.trim();
             const operatorName = document.getElementById('operatorName').value.trim();
             const checkSensor = document.getElementById('checkSensor').checked;
-            const checkTemp = document.getElementById('checkTemp').checked;
             const check3 = document.getElementById('check3').checked;
-            const actualTempInput = document.getElementById('actualTemp').value;
-            const actualTemp = parseFloat(actualTempInput);
+            const actualTempVal = actualTempInput.value;
+            const actualTemp = parseFloat(actualTempVal);
 
             let errors = [];
 
@@ -319,13 +334,15 @@
             if (!mainDirectoryHandle) errors.push("ยังไม่ได้เลือกโฟลเดอร์บันทึก Log");
             if (!operatorName) errors.push("ยังไม่ได้กรอกรหัสผู้ตรวจสอบ");
             if (!checkSensor) errors.push("ยังไม่ได้ติ๊กเช็คแรงกดของเซนเซอร์");
-            if (!checkTemp) errors.push("ยังไม่ได้ติ๊กเช็คอุณหภูมิฟิกเจอร์");
             
-            if (checkTemp) {
-                if (actualTempInput === "") {
-                    errors.push("กรุณากรอกตัวเลขอุณหภูมิจริง");
+            // ตรวจสอบอุณหภูมิเมื่อมีการติ๊กถูก
+            if (!checkTemp.checked) {
+                errors.push("ยังไม่ได้ติ๊กเช็คอุณหภูมิฟิกเจอร์");
+            } else {
+                if (actualTempVal === "") {
+                    errors.push("กรุณากรอกตัวเลขอุณหภูมิจริงของฟิกเจอร์");
                 } else if (isNaN(actualTemp) || actualTemp < 48.0 || actualTemp > 52.0) {
-                    errors.push(`อุณหภูมิฟิกเจอร์อยู่นอกเกณฑ์! (${actualTempInput} °C / ต้องอยู่ระหว่าง 48.0 - 52.0 °C)`);
+                    errors.push(`อุณหภูมิฟิกเจอร์อยู่นอกเกณฑ์! (${actualTempVal} °C / เกณฑ์คือ 48.0 - 52.0 °C)`);
                 }
             }
 
@@ -349,7 +366,6 @@
             input.addEventListener('change', validateChecklist);
         });
 
-        // เมื่อกดบันทึก -> สร้างโฟลเดอร์ย่อยตามเลขเครื่อง แล้วบันทึกไฟล์ CSV
         document.getElementById('checklistForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
@@ -361,7 +377,7 @@
 
             const machineId = document.getElementById('machineId').value;
             const operatorName = document.getElementById('operatorName').value;
-            const temp = document.getElementById('actualTemp').value;
+            const temp = actualTempInput.value;
             const now = new Date();
             const timeStr = now.toLocaleString('th-TH');
             const dateFileName = now.toISOString().split('T')[0];
@@ -369,10 +385,7 @@
             const logLine = `"${timeStr}","${machineId}","${operatorName}","${temp}","PASS"\n`;
 
             try {
-                // สร้างหรือเข้าถึงโฟลเดอร์ย่อยตามรหัสเครื่องจักร (เช่น /CNC-01/)
                 const machineFolderHandle = await mainDirectoryHandle.getDirectoryHandle(machineId, { create: true });
-
-                // สร้างหรือเปิดไฟล์ CSV ประจำวันในโฟลเดอร์นั้น
                 const fileName = `log_${machineId}_${dateFileName}.csv`;
                 const fileHandle = await machineFolderHandle.getFileHandle(fileName, { create: true });
                 
@@ -391,9 +404,10 @@
 
                 alert(`🎉 บันทึก Log สำเร็จ!\nจัดเก็บที่: ${mainDirectoryHandle.name} / ${machineId} / ${fileName}`);
                 
-                // เคลียร์ข้อมูลฟอร์ม
+                // เคลียร์ข้อมูลฟอร์ม และซ่อนช่องอุณหภูมิกลับไป
                 document.getElementById('operatorName').value = '';
-                document.getElementById('actualTemp').value = '';
+                actualTempInput.value = '';
+                tempInputBox.style.display = 'none';
                 document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
                 validateChecklist();
 
