@@ -2,120 +2,123 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>แบบฟอร์มตรวจสอบเครื่องจักรก่อนเริ่มงาน (iPad Version)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบฟอร์มตรวจสอบเครื่องจักรก่อนเริ่มงาน (PC Version)</title>
     <style>
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: #f4f7f6; 
             margin: 0; 
-            padding: 15px; 
+            padding: 20px; 
         }
         .container { 
-            max-width: 550px; 
+            max-width: 600px; 
             margin: 0 auto; 
             background: #fff; 
-            padding: 20px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+            padding: 25px 30px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
         }
         .header-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeded;
         }
-        
-        /* ปุ่มตั้งค่าเครื่องจักรที่ปรับแก้ไขให้จิ้มง่ายบน iPad */
-        .btn-setup {
-            background-color: #007aff;
-            color: white !important;
-            border: none;
-            padding: 10px 16px !important;
-            border-radius: 8px;
-            font-size: 15px !important;
-            font-weight: 600;
-            cursor: pointer;
-            width: auto !important;
-            margin-top: 0 !important;
-            box-shadow: 0 2px 5px rgba(0, 122, 255, 0.3);
-            -webkit-tap-highlight-color: rgba(0,0,0,0);
+        .shortcut-hint {
+            font-size: 13px;
+            color: #7f8c8d;
         }
-        .btn-setup:active {
-            opacity: 0.7;
+        .shortcut-badge {
+            background: #e0e0e0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
         }
-
-        h2 { margin: 0; color: #1c1c1e; font-size: 22px; }
+        h2 { margin: 0; color: #2c3e50; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; color: #2c2c2e; font-size: 16px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #34495e; }
         input[type="text"], input[type="number"] { 
             width: 100%; 
-            padding: 14px; 
-            border: 1px solid #c7c7cc; 
-            border-radius: 8px; 
+            padding: 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
             box-sizing: border-box; 
-            font-size: 18px;
-            background-color: #f2f2f7;
+            font-size: 16px;
         }
-        input:focus { background-color: #fff; outline: 2px solid #007aff; }
+        input:read-only { background-color: #eaeded; color: #555; }
 
         .checklist-item { 
             display: flex; 
             flex-direction: column;
             margin-bottom: 12px; 
-            padding: 16px; 
+            padding: 15px; 
             background: #f9f9f9; 
-            border-radius: 10px; 
-            border: 1px solid #e5e5ea;
+            border-radius: 6px; 
+            border: 1px solid #e0e0e0;
         }
         .check-header { display: flex; align-items: center; }
-        
         .checklist-item input[type="checkbox"] { 
-            width: 24px;
-            height: 24px;
-            margin-right: 15px;
-            accent-color: #34c759;
+            transform: scale(1.8); 
+            margin-right: 20px; 
+            margin-left: 10px;
             cursor: pointer; 
         }
         .temp-input-box {
-            margin-top: 12px;
-            margin-left: 39px;
+            margin-top: 10px;
+            margin-left: 48px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        .temp-input-box input { width: 180px; padding: 10px 14px; background: #fff; }
+        .temp-input-box input { width: 160px; padding: 8px 12px; }
+
+        /* กล่องแสดงการตั้งค่าปัจจุบัน */
+        .path-info-box {
+            background-color: #eef9ff;
+            border: 1px solid #bce1f7;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1c5276;
+            line-height: 1.5;
+        }
 
         .status-box {
             margin-top: 20px;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 15px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
-        .status-box.error { background-color: #ffe5e5; color: #d70015; border: 1px solid #ffb3b3; }
-        .status-box.success { background-color: #e1f8e6; color: #147d36; border: 1px solid #a3e7b4; text-align: center; font-size: 17px; }
+        .status-box.error { background-color: #fce8e6; color: #c5221f; border: 1px solid #f5c6cb; }
+        .status-box.success { background-color: #e6f4ea; color: #137333; border: 1px solid #ceead6; text-align: center; font-size: 16px; }
 
         button { 
             width: 100%; 
-            padding: 18px; 
+            padding: 16px; 
             color: white; 
             border: none; 
-            border-radius: 10px; 
+            border-radius: 6px; 
             font-size: 18px; 
             font-weight: bold;
             margin-top: 20px; 
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
         }
-        button:disabled { background-color: #ff3b30; cursor: not-allowed; opacity: 0.8; }
-        button:enabled { background-color: #34c759; cursor: pointer; box-shadow: 0 4px 8px rgba(52, 199, 89, 0.3); }
+        button:disabled { background-color: #ea4335; cursor: not-allowed; opacity: 0.85; }
+        button:enabled { background-color: #34a853; cursor: pointer; box-shadow: 0 4px 6px rgba(52, 168, 83, 0.3); }
 
+        /* Modal ตั้งค่าระบบ */
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -123,37 +126,57 @@
         .modal-content {
             background: #fff;
             padding: 25px;
-            border-radius: 12px;
-            width: 85%;
-            max-width: 450px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
+        .btn-folder {
+            background-color: #2980b9;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .btn-folder:hover { background-color: #1f618d; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-bar">
-            <h2>📋 ตรวจเช็คเครื่องจักร</h2>
-            <!-- เปลี่ยนจาก div เป็น button แท้ๆ เพื่อให้รองรับ touch event บน iPad -->
-            <button type="button" class="btn-setup" onclick="openSetupModal()">⚙️ ตั้งค่าเครื่อง</button>
+            <h2>📋 ตรวจสอบเครื่องจักร</h2>
+            <div class="shortcut-hint">
+                ⚙️ ตั้งค่าระบบ: <span class="shortcut-badge">Alt + S</span> หรือ <span class="shortcut-badge">F8</span>
+            </div>
+        </div>
+
+        <!-- แสดงเส้นทางโฟลเดอร์และรหัสเครื่องจักรปัจจุบัน -->
+        <div class="path-info-box" id="pathDisplay">
+            📌 <b>การตั้งค่าไดเรกทอรี:</b><br>
+            • รหัสเครื่องจักร: <span id="dispMachineId" style="font-weight:bold; color:#c5221f;">ยังไม่ได้ตั้งค่า</span><br>
+            • ปลายทางเก็บ Log: <span id="dispFolderPath" style="font-weight:bold; color:#c5221f;">ยังไม่ได้เลือกโฟลเดอร์</span>
         </div>
 
         <form id="checklistForm">
             <div class="form-group">
                 <label>รหัสเครื่องจักร (Machine ID):</label>
-                <input type="text" id="machineId" class="input-check" readonly placeholder="แตะปุ่ม '⚙️ ตั้งค่าเครื่อง' ด้านบน">
+                <input type="text" id="machineId" class="input-check" readonly placeholder="กด Alt+S เพื่อตั้งค่ารหัสเครื่อง">
             </div>
             <div class="form-group">
-                <label>รหัสพนักงาน / ผู้ตรวจสอบ:</label>
-                <input type="text" id="operatorName" class="input-check" placeholder="แตะเพื่อพิมพ์ชื่อ/รหัส">
+                <label>รหัสพนักงาน/ผู้ตรวจสอบ:</label>
+                <input type="text" id="operatorName" class="input-check" placeholder="ระบุชื่อ หรือ รหัสพนักงาน">
             </div>
 
-            <h3 style="color: #1c1c1e; margin-top: 25px; font-size: 18px;">รายการตรวจสอบ</h3>
+            <h3 style="color: #2c3e50; margin-top: 25px;">รายการตรวจสอบ</h3>
             
             <div class="checklist-item">
                 <div class="check-header">
                     <input type="checkbox" class="input-check" id="checkSensor">
                     <label for="checkSensor" style="margin: 0; font-weight: normal; cursor: pointer; width: 100%;">
-                        1. ตรวจสอบแรงกดของเซนเซอร์ (Pressure Normal)
+                        1. ตรวจสอบแรงกดของเซนเซอร์ (Sensor Pressure Normal)
                     </label>
                 </div>
             </div>
@@ -162,12 +185,12 @@
                 <div class="check-header">
                     <input type="checkbox" class="input-check" id="checkTemp">
                     <label for="checkTemp" style="margin: 0; font-weight: normal; cursor: pointer; width: 100%;">
-                        2. ตรวจสอบอุณหภูมิฟิกเจอร์ (50 ± 2 °C)
+                        2. ตรวจสอบอุณหภูมิฟิกเจอร์ (ค่ามาตรฐาน 50 ± 2 °C)
                     </label>
                 </div>
                 <div class="temp-input-box">
                     <input type="number" id="actualTemp" class="input-check" step="0.1" placeholder="กรอกอุณภูมิจริง">
-                    <span style="font-size: 16px; color: #555;">°C</span>
+                    <span style="font-size: 14px; color: #555;">°C</span>
                 </div>
             </div>
 
@@ -175,7 +198,7 @@
                 <div class="check-header">
                     <input type="checkbox" class="input-check" id="check3">
                     <label for="check3" style="margin: 0; font-weight: normal; cursor: pointer; width: 100%;">
-                        3. ฝาครอบ Safety และ Emergency Stop พร้อมใช้งาน
+                        3. ฝาครอบความปลอดภัย (Safety Guard) และปุ่มหยุดฉุกเฉินพร้อมใช้งาน
                     </label>
                 </div>
             </div>
@@ -186,59 +209,104 @@
         </form>
     </div>
 
-    <!-- Modal ตั้งค่าสำหรับ iPad -->
+    <!-- Modal ตั้งค่าระบบ (System Setup) -->
     <div id="setupModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-top:0; color:#1c1c1e;">⚙️ ตั้งค่ารหัสเครื่องจักร</h3>
-            <hr style="border: 0; border-top: 1px solid #e5e5ea; margin: 15px 0;">
+            <h3 style="margin-top:0; color:#2c3e50;">⚙️ ตั้งค่าตำแหน่งบันทึกไฟล์ Log</h3>
+            <p style="font-size: 13px; color: #666;">กำหนดเลขเครื่องและโฟลเดอร์หลัก ระบบจะสร้างโฟลเดอร์ย่อยตามเลขเครื่องให้อัตโนมัติ</p>
+            <hr>
             
+            <div class="form-group" style="margin-top: 15px;">
+                <label>1. ระบุหมายเลขเครื่องจักร (Machine ID):</label>
+                <input type="text" id="cfgMachineId" placeholder="เช่น CNC-01 หรือ M-102">
+            </div>
+
             <div class="form-group">
-                <label>รหัสเครื่องจักรประจำ iPad เครื่องนี้:</label>
-                <input type="text" id="cfgMachineId" placeholder="เช่น CNC-01 หรือ M-205" style="background:#fff;">
+                <label>2. เลือกโฟลเดอร์หลักสำหรับเซฟ Log:</label>
+                <button type="button" class="btn-folder" onclick="selectParentFolder()">📁 กดเพื่อเลือกโฟลเดอร์ในคอมพิวเตอร์</button>
+                <div id="folderSelectedName" style="margin-top:8px; font-size:13px; color:#27ae60; font-weight:bold;"></div>
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 25px;">
-                <button type="button" style="background:#34c759; margin:0; padding:14px;" onclick="saveSystemConfig()">บันทึก</button>
-                <button type="button" style="background:#8e8e93; margin:0; padding:14px;" onclick="closeSetupModal()">ยกเลิก</button>
+                <button type="button" style="background:#27ae60; margin:0; padding:12px;" onclick="saveSystemConfig()">บันทึกการตั้งค่า</button>
+                <button type="button" style="background:#7f8c8d; margin:0; padding:12px;" onclick="closeSetupModal()">ยกเลิก (Esc)</button>
             </div>
         </div>
     </div>
 
     <script>
+        let mainDirectoryHandle = null; // ตัวแปรเก็บตำแหน่งโฟลเดอร์หลัก
         const inputs = document.querySelectorAll('.input-check');
         const submitBtn = document.getElementById('submitBtn');
         const statusBox = document.getElementById('statusBox');
         const setupModal = document.getElementById('setupModal');
 
+        // คีย์ลัดเปิดหน้าตั้งค่า (Alt + S หรือ F8)
+        window.addEventListener('keydown', function(e) {
+            if ((e.altKey && (e.key === 's' || e.key === 'S' || e.key === 'ห')) || e.key === 'F8') {
+                e.preventDefault();
+                openSetupModal();
+            }
+            if (e.key === 'Escape') closeSetupModal();
+        });
+
+        function openSetupModal() { setupModal.style.display = 'flex'; }
+        function closeSetupModal() { setupModal.style.display = 'none'; }
+
+        // โหลดค่าเดิมที่เคยเซ็ทไว้
         window.addEventListener('DOMContentLoaded', () => {
-            const savedMachineId = localStorage.getItem('cfg_machine_id');
+            const savedMachineId = localStorage.getItem('pc_cfg_machine_id');
             if (savedMachineId) {
                 document.getElementById('machineId').value = savedMachineId;
                 document.getElementById('cfgMachineId').value = savedMachineId;
+                document.getElementById('dispMachineId').innerText = savedMachineId;
+                document.getElementById('dispMachineId').style.color = "#27ae60";
             }
             validateChecklist();
         });
 
-        function openSetupModal() { 
-            setupModal.style.display = 'flex'; 
-        }
-        function closeSetupModal() { 
-            setupModal.style.display = 'none'; 
+        // ฟังก์ชันกดเลือกโฟลเดอร์หลักบนคอมพิวเตอร์
+        async function selectParentFolder() {
+            try {
+                mainDirectoryHandle = await window.showDirectoryPicker();
+                document.getElementById('folderSelectedName').innerText = `เลือกโฟลเดอร์: ${mainDirectoryHandle.name}`;
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    alert('เบราว์เซอร์ไม่รองรับ หรือ เกิดข้อผิดพลาดในการเลือกโฟลเดอร์');
+                }
+            }
         }
 
+        // บันทึกการตั้งค่าระบบ
         function saveSystemConfig() {
             const cfgMachineId = document.getElementById('cfgMachineId').value.trim();
+            
             if (!cfgMachineId) {
                 alert('กรุณากรอกรหัสเครื่องจักร');
                 return;
             }
-            localStorage.setItem('cfg_machine_id', cfgMachineId);
+
+            if (!mainDirectoryHandle) {
+                alert('กรุณากดเลือกโฟลเดอร์ปลายทางก่อนครับ');
+                return;
+            }
+
+            localStorage.setItem('pc_cfg_machine_id', cfgMachineId);
             document.getElementById('machineId').value = cfgMachineId;
-            alert('บันทึกรหัสเครื่องจักรเรียบร้อย!');
+
+            // อัปเดตข้อความแสดงผลหน้าหลัก
+            document.getElementById('dispMachineId').innerText = cfgMachineId;
+            document.getElementById('dispMachineId').style.color = "#27ae60";
+            
+            document.getElementById('dispFolderPath').innerText = `${mainDirectoryHandle.name} / ${cfgMachineId} /`;
+            document.getElementById('dispFolderPath').style.color = "#27ae60";
+
+            alert('บันทึกการตั้งค่าระบบเรียบร้อย!');
             closeSetupModal();
             validateChecklist();
         }
 
+        // ตรวจสอบความถูกต้องของฟอร์มแบบเรียลไทม์
         function validateChecklist() {
             const machineId = document.getElementById('machineId').value.trim();
             const operatorName = document.getElementById('operatorName').value.trim();
@@ -250,10 +318,11 @@
 
             let errors = [];
 
-            if (!machineId) errors.push("ยังไม่ได้ตั้งรหัสเครื่อง (แตะปุ่ม '⚙️ ตั้งค่าเครื่อง')");
+            if (!machineId) errors.push("ยังไม่ได้ตั้งค่าหมายเลขเครื่องจักร (กด Alt+S)");
+            if (!mainDirectoryHandle) errors.push("ยังไม่ได้เลือกโฟลเดอร์บันทึก Log (กด Alt+S)");
             if (!operatorName) errors.push("ยังไม่ได้กรอกรหัสผู้ตรวจสอบ");
-            if (!checkSensor) errors.push("ยังไม่ได้เช็คแรงกดเซนเซอร์");
-            if (!checkTemp) errors.push("ยังไม่ได้เช็คอุณหภูมิฟิกเจอร์");
+            if (!checkSensor) errors.push("ยังไม่ได้ติ๊กเช็คแรงกดของเซนเซอร์");
+            if (!checkTemp) errors.push("ยังไม่ได้ติ๊กเช็คอุณหภูมิฟิกเจอร์");
             
             if (checkTemp) {
                 if (actualTempInput === "") {
@@ -263,16 +332,16 @@
                 }
             }
 
-            if (!check3) errors.push("ยังไม่ได้เช็คระบบความปลอดภัย");
+            if (!check3) errors.push("ยังไม่ได้ติ๊กเช็คระบบความปลอดภัย");
 
             if (errors.length === 0) {
                 submitBtn.disabled = false;
-                submitBtn.innerText = "✅ ผ่านการตรวจสอบ - กดบันทึก Log";
+                submitBtn.innerText = "✅ ผ่านการตรวจสอบ - กดเพื่อบันทึกงาน";
                 statusBox.className = "status-box success";
-                statusBox.innerHTML = "<b>🟢 พร้อมบันทึกข้อมูลเรียบร้อยครับ</b>";
+                statusBox.innerHTML = "<b>🟢 ทุกรายการถูกต้องสมบูรณ์ พร้อมบันทึกข้อมูลแล้วครับ</b>";
             } else {
                 submitBtn.disabled = true;
-                submitBtn.innerText = "⛔ ไม่อนุญาตให้บันทึก (กรุณาเช็คให้ครบ)";
+                submitBtn.innerText = "⛔ ไม่อนุญาตให้บันทึก (กรุณาตรวจสอบ)";
                 statusBox.className = "status-box error";
                 statusBox.innerHTML = "<b>❌ รายการที่ยังไม่ผ่าน:</b><br>" + errors.map(err => `• ${err}`).join('<br>');
             }
@@ -283,8 +352,15 @@
             input.addEventListener('change', validateChecklist);
         });
 
-        document.getElementById('checklistForm').addEventListener('submit', function(e) {
+        // เมื่อกดบันทึก -> สร้างโฟลเดอร์ย่อยตามเลขเครื่อง แล้วเขียนไฟล์ CSV
+        document.getElementById('checklistForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+
+            if (!mainDirectoryHandle) {
+                alert('⚠️ กรุณากด Alt+S เพื่อเลือกโฟลเดอร์เซฟไฟล์ก่อนครับ');
+                openSetupModal();
+                return;
+            }
 
             const machineId = document.getElementById('machineId').value;
             const operatorName = document.getElementById('operatorName').value;
@@ -293,26 +369,43 @@
             const timeStr = now.toLocaleString('th-TH');
             const dateFileName = now.toISOString().split('T')[0];
 
-            const csvHeader = "Timestamp,Machine_ID,Operator,Temp_C,Status\n";
-            const csvRow = `"${timeStr}","${machineId}","${operatorName}","${temp}","PASS"\n`;
-            const blobContent = csvHeader + csvRow;
+            const logLine = `"${timeStr}","${machineId}","${operatorName}","${temp}","PASS"\n`;
 
-            const blob = new Blob(["\ufeff" + blobContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.createElement("a");
-            
-            downloadLink.href = url;
-            downloadLink.download = `log_${machineId}_${dateFileName}.csv`;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
+            try {
+                // 1. สร้างหรือเข้าถึง "โฟลเดอร์ย่อยตามเลขเครื่อง" (เช่น /CNC-01/)
+                const machineFolderHandle = await mainDirectoryHandle.getDirectoryHandle(machineId, { create: true });
 
-            alert(`🎉 บันทึกสำเร็จ! ไฟล์ Log ถูกเซฟลงในแอป Files (Downloads) เรียบร้อยครับ`);
+                // 2. สร้างหรือเปิดไฟล์ CSV ประจำวันในโฟลเดอร์ย่อยนั้น (เช่น log_CNC-01_2026-07-21.csv)
+                const fileName = `log_${machineId}_${dateFileName}.csv`;
+                const fileHandle = await machineFolderHandle.getFileHandle(fileName, { create: true });
+                
+                // 3. อ่านข้อมูลเดิมเพื่อเขียนต่อท้าย (Append)
+                const file = await fileHandle.getFile();
+                const existingText = await file.text();
+                
+                let contentToWrite = existingText;
+                if (existingText.length === 0) {
+                    contentToWrite = "Timestamp,Machine_ID,Operator,Temp_C,Status\n";
+                }
+                contentToWrite += logLine;
 
-            document.getElementById('operatorName').value = '';
-            document.getElementById('actualTemp').value = '';
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            validateChecklist();
+                // 4. บันทึกลงดิสก์
+                const writable = await fileHandle.createWritable();
+                await writable.write(contentToWrite);
+                await writable.close();
+
+                alert(`🎉 บันทึก Log สำเร็จ!\nจัดเก็บใน: ${mainDirectoryHandle.name} / ${machineId} / ${fileName}`);
+                
+                // เคลียร์ค่าเตรียมตรวจรอบถัดไป
+                document.getElementById('operatorName').value = '';
+                document.getElementById('actualTemp').value = '';
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                validateChecklist();
+
+            } catch (err) {
+                console.error(err);
+                alert('เกิดข้อผิดพลาดในการสร้างโฟลเดอร์หรือเขียนไฟล์ลงดิสก์');
+            }
         });
     </script>
 </body>
